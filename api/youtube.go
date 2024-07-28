@@ -1,13 +1,13 @@
 package api
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"google.golang.org/api/option"
 	"google.golang.org/api/youtube/v3"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"sdmp/storage"
 )
 
@@ -47,14 +47,21 @@ func SearchYouTube(query string) (*storage.Song, error) {
 	return song, nil
 }
 
-// DownloadAudio downloads the audio of a song using yt-dlp
+// DownloadAudio downloads the audio of a song
 func DownloadAudio(song *storage.Song) error {
-	cmd := exec.Command("yt-dlp", "-f", "bestaudio", "-x", "--audio-format", "mp3", "-o", song.Id, song.URL)
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
-	err := cmd.Run()
-	if err != nil {
-		return fmt.Errorf("error downloading audio: %w, %s", err, stderr.String())
+	audioDir := "/app/audio-files"
+	audioPath := filepath.Join(audioDir, song.Id+".mp3")
+
+	// Create the audio directory if it doesn't exist
+	if err := os.MkdirAll(audioDir, os.ModePerm); err != nil {
+		return fmt.Errorf("error creating audio directory: %w", err)
 	}
+
+	// Use yt-dlp to download the audio
+	cmd := exec.Command("yt-dlp", "-x", "--audio-format", "mp3", "-o", audioPath, song.URL)
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("error downloading audio: %w", err)
+	}
+
 	return nil
 }

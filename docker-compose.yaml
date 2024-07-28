@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  bot:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - audio-files:/app/audio-files
+volumes:
+  audio-files: {}

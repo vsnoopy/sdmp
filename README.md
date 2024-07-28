@@ -3,6 +3,19 @@
 A simple discord music bot that can play music from youtube.
 
 ## Installation
+
+### Docker
+The easiest way to run the bot is to use docker. First, you need to have docker installed on your system. You can install docker by following the instructions [here](https://docs.docker.com/get-docker/).
+
+Next, make sure you have a `.env` file in the root directory of the repo with your tokens as described in the [Usage](#usage) section.
+
+To build and run the docker image, run the following command:
+```bash
+make docker
+```
+
+
+### Local Installation
 First, you need to have the following dependencies installed:
 - [ffmpeg](https://ffmpeg.org/)
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp)

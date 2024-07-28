@@ -8,6 +8,7 @@ import (
 	"layeh.com/gopus"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"sdmp/api"
 	"sdmp/storage"
 )
@@ -123,7 +124,8 @@ func PlayAudio(s *discordgo.Session, guildID, channelID string, song *storage.So
 	defer vc.Speaking(false)
 
 	// Start ffmpeg
-	ffmpeg := exec.Command("ffmpeg", "-i", song.Id+".mp3", "-f", "s16le", "-ar", "48000", "-ac", "2", "pipe:1")
+	audioPath := filepath.Join("/app/audio-files", song.Id+".mp3")
+	ffmpeg := exec.Command("ffmpeg", "-i", audioPath, "-f", "s16le", "-ar", "48000", "-ac", "2", "pipe:1")
 	ffmpegbuf, err := ffmpeg.StdoutPipe()
 	if err != nil {
 		return fmt.Errorf("error creating ffmpeg stdout pipe: %w", err)
@@ -236,7 +238,8 @@ func PlayNextSong(s *discordgo.Session, i *discordgo.InteractionCreate, channelI
 	}
 
 	// Delete the mp3 file after playing
-	err = os.Remove(song.Id + ".mp3")
+	audioPath := filepath.Join("/app/audio-files", song.Id+".mp3")
+	err = os.Remove(audioPath)
 	if err != nil {
 		fmt.Println("Error deleting file:", err)
 	}
